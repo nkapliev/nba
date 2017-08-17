@@ -1,6 +1,9 @@
-Supposed directory structure:
-====================
+#nba
 
+C++ non-blocking algorithms collection
+
+####Project directory structure:
+````
   .
   |-- build
   |-- test
@@ -11,3 +14,4 @@ Supposed directory structure:
       └-- memory
           |-- include
           └-- src  
+````
