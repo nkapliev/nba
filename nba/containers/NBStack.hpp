@@ -2,18 +2,26 @@
 #define NBA_CONTAINER_STACK_H
 
 #include <stdlib.h>
+#include <atomic>
+
+// would be good to be able to do
+// #include "Locks.hpp"
+#include "../lock/Locks.hpp"
 
 namespace nba
 {
 
 template <class T>
-class Stack
+class NBStack
 {
 public:
     typedef T value_type;
     typedef T& reference;
     typedef int64_t size_type;
     typedef const T& const_reference;
+
+    // would be helpfull to use this in outer code
+    typedef lock::SpinLock lock_type; 
 
 private:
     struct Node
@@ -22,25 +30,25 @@ private:
         Node* next;
     };
 
-    size_type m_size;
-    Node*     m_list;
+    std::atomic<size_type> m_size;
+    std::atomic<Node*>     m_list;
 
 public:
-    Stack()
+    NBStack()
     {
-        m_size = 0;
-        m_list = nullptr;
+        m_size.store(0, std::memory_order_relaxed);
+        m_list.store(nullptr, std::memory_order_relaxed);
     }
     
-    // Stack is not copy/move constructible
-    Stack(const Stack& s) = delete;
-    Stack(Stack&& s) = delete;
+    // NBStack is not copy/move constructible
+    NBStack(const NBStack& s) = delete;
+    NBStack(NBStack&& s) = delete;
 
-    // Stack is no move/copy assignable
-    Stack& operator=(const Stack& s) = delete;
-    Stack& operator=(Stack&& s) = delete;
+    // NBStack is no move/copy assignable
+    NBStack& operator=(const NBStack& s) = delete;
+    NBStack& operator=(NBStack&& s) = delete;
 
-    ~Stack()
+    ~NBStack()
     {
         while(!empty())
         {
@@ -50,19 +58,19 @@ public:
 
     bool empty() const
     {
-        return m_size == 0;
+        return m_size.load(std::memory_order_relaxed) == 0;
     }
 
     size_type size() const
     {
-        return m_size;
+        return m_size.load(std::memory_order_relaxed);
     }
 
     const_reference top() const
     {
         if (!empty())
         {
-            return *(m_list->data);
+            return *(m_list.load()->data);
         } else
         {
             Node n;
@@ -75,14 +83,18 @@ public:
     {
         Node *new_node = new Node();
         new_node->data = new value_type(val);
-
-        new_node->next = m_list;
-        m_list = new_node;
+        do
+        {
+            new_node->next = m_list;
+        }
+        while (m_list.compare_exchange_weak(new_node->next, new_node));
         m_size++;
     }
 
     void pop()
     {
+        // it's not the right way
+        // should be replaced with lock-free code
         if (!empty())
         {
             Node *top = m_list;
@@ -93,6 +105,7 @@ public:
 
     void swap(stack& x)
     {
+        // should be replaced with lock-free code
         Node *tmp_list = m_list;
         size_t tmp_size = m_size;
 
