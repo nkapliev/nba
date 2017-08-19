@@ -2,6 +2,7 @@
 #define NBA_CONTAINER_STACK_H
 
 #include <stdlib.h>
+#include <stdexcept>
 
 namespace nba
 {
@@ -18,8 +19,8 @@ public:
 private:
     struct Node
     {
-        T*    data;
-        Node* next;
+        value_type* data;
+        Node*       next;
     };
 
     size_type m_size;
@@ -50,7 +51,7 @@ public:
 
     bool empty() const
     {
-        return m_size == 0;
+        return m_list == nullptr;
     }
 
     size_type size() const
@@ -58,6 +59,7 @@ public:
         return m_size;
     }
 
+    // @throws std::logic_error
     const_reference top() const
     {
         if (!empty())
@@ -65,8 +67,9 @@ public:
             return *(m_list->data);
         } else
         {
-            Node n;
-            return n; 
+            // TODO In multy-thread envinronment we will need to always wrap `top` call with try-catch.
+            // TODO Is it ok?
+            throw std::logic_error("Calling `top` from empty stack is forbidden.");
         }
     }
 
@@ -91,10 +94,10 @@ public:
         }
     }
 
-    void swap(stack& x)
+    void swap(Stack& x)
     {
         Node *tmp_list = m_list;
-        size_t tmp_size = m_size;
+        size_type tmp_size = m_size;
 
         m_list = x.m_list;
         x.m_list = m_list;
@@ -108,4 +111,4 @@ public:
 
 } // namespace nba
 
-#endif
+#endif // NBA_CONTAINER_STACK_H

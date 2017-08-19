@@ -1,7 +1,7 @@
 #include <atomic>
 
-#ifdef SPIN_LOCK
-#define SPIN_LOCK
+#ifdef NBA_SPIN_LOCK
+#define NBA_SPIN_LOCK
 
 namespace lock
 {
@@ -20,4 +20,4 @@ public:
 
 } // lock
 
-#endif // SPIN_LOCK
+#endif // NBA_SPIN_LOCK

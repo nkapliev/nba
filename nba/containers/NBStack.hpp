@@ -1,12 +1,13 @@
-#ifndef NBA_CONTAINER_STACK_H
-#define NBA_CONTAINER_STACK_H
+#ifndef NBA_CONTAINER_NBSTACK_H
+#define NBA_CONTAINER_NBSTACK_H
 
 #include <stdlib.h>
 #include <atomic>
 
 // would be good to be able to do
 // #include "Locks.hpp"
-#include "../lock/Locks.hpp"
+// I removed relative paths by changing makefile. Looks good now?
+#include <nba/lock/Lock.hpp>
 
 namespace nba
 {
@@ -26,8 +27,8 @@ public:
 private:
     struct Node
     {
-        T*    data;
-        Node* next;
+        value_type* data;
+        Node*       next;
     };
 
     std::atomic<size_type> m_size;
@@ -121,4 +122,4 @@ public:
 
 } // namespace nba
 
-#endif
+#endif // NBA_CONTAINER_NBSTACK_H

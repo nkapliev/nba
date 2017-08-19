@@ -38,3 +38,7 @@ CMakeCache.txt
 cmake_install.cmake
 CMakeFiles/
 cmake-build-debug/
+nba.cbp
+# TODO Move all build-related tmp crap to `build` dir
+external/
+googletest-prefix/
