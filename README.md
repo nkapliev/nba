@@ -1,8 +1,8 @@
-#nba
+# nba
 
 C++ non-blocking algorithms collection
 
-####Project directory structure:
+#### Project directory structure:
 ````
   .
   |-- build
@@ -15,3 +15,9 @@ C++ non-blocking algorithms collection
           |-- include
           └-- src  
 ````
+
+#### Test
+```
+cmake .
+make
+```
