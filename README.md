@@ -18,6 +18,10 @@ C++ non-blocking algorithms collection
 
 #### Test
 ```
+# Build make files
 cmake .
+# Build executable targets and libs
 make
+# Run all registred tests in super verbose mode
+ctest -VV
 ```

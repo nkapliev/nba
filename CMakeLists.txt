@@ -4,6 +4,11 @@ cmake_minimum_required(VERSION 3.7)
 project(nba)
 set(CMAKE_CXX_STANDARD 14)
 
+# For global includes
+set(PROJECT_ROOT ./)
+include_directories(${PROJECT_ROOT})
+
+# Googletest library
 include(ExternalProject)
 set(GTEST_ROOT ${CMAKE_BINARY_DIR}/external)
 ExternalProject_Add(googletest
@@ -13,27 +18,19 @@ ExternalProject_Add(googletest
 include_directories(${GTEST_ROOT}/include)
 link_directories(${GTEST_ROOT}/lib)
 
-set(PROJECT_ROOT ./)
-include_directories(${PROJECT_ROOT})
+# Tests
+set(
+        NBA_CONTAINERS_TEST_SOURCE_FILES
+        test/test.cpp
+        test/containers/unit/stack.cpp
+)
+add_executable(RunUnitTests ${NBA_CONTAINERS_TEST_SOURCE_FILES})
+add_dependencies(RunUnitTests googletest)
+target_link_libraries(RunUnitTests gtest gtest_main)
 
-set(TEST_SOURCE_FILES test/test.cpp test/containers/unit/stack.cpp)
-
-
+# Register tests in CTest
 enable_testing()
-find_package(GTest REQUIRED)
-
-cmake_policy(SET CMP0048 NEW)
-project(my_gtest_pkgconfig VERSION 0.0.1 LANGUAGES CXX)
-
-find_package(PkgConfig)
-pkg_search_module(GTEST REQUIRED gtest_main)
-
-add_executable(nba_test ${TEST_SOURCE_FILES})
-add_dependencies(nba_test googletest)
-
-target_link_libraries(nba_test gtest gtest_main ${GTEST_LDFLAGS})
-target_compile_options(nba_test PUBLIC ${GTEST_CFLAGS})
-
-# TODO Integrate with CTest
-#include(CTest)
-#add_test(first_and_only_test nba_test)
+add_test(
+        NAME RunUnitTests
+        COMMAND RunUnitTests
+)

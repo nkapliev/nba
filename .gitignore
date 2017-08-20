@@ -33,12 +33,15 @@
 *.app
 
 .idea/
+# TODO Move all build-related tmp crap to `build` dir
 Makefile
 CMakeCache.txt
 cmake_install.cmake
+nba.cbp
+CTestTestfile.cmake
 CMakeFiles/
 cmake-build-debug/
-nba.cbp
-# TODO Move all build-related tmp crap to `build` dir
 external/
 googletest-prefix/
+Testing/
+RunUnitTests
