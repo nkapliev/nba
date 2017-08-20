@@ -16,6 +16,10 @@ C++ non-blocking algorithms collection
           └-- src  
 ````
 
+#### Dev Dependencies
+lcov  
+
+
 #### Test
 ```
 # Build make files
