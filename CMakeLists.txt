@@ -26,7 +26,7 @@ set(
 )
 add_executable(RunUnitTests ${NBA_CONTAINERS_TEST_SOURCE_FILES})
 add_dependencies(RunUnitTests googletest)
-target_link_libraries(RunUnitTests gtest gtest_main)
+target_link_libraries(RunUnitTests gtest gtest_main -lpthread)
 
 # Register tests in CTest
 enable_testing()
