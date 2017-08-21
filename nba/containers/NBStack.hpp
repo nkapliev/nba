@@ -25,19 +25,13 @@ public:
     typedef lock::SpinLock lock_type; 
 
 private:
-    struct Node
-    {
-        value_type* data;
-        Node*       next;
-    };
+    class Node;
 
-    std::atomic<size_type> m_size;
     std::atomic<Node*>     m_list;
 
 public:
     NBStack()
     {
-        m_size.store(0, std::memory_order_relaxed);
         m_list.store(nullptr, std::memory_order_relaxed);
     }
     
@@ -59,37 +53,38 @@ public:
 
     bool empty() const
     {
-        return m_size.load(std::memory_order_relaxed) == 0;
+        return m_list.load(std::memory_order_relaxed) == nullptr;
     }
 
     size_type size() const
     {
-        return m_size.load(std::memory_order_relaxed);
+        if (m_list.load(std::memory_order_relaxed) == nullptr)
+            return 0;
+        return m_list.load(std::memory_order_relaxed)->size();
     }
 
     const_reference top() const
     {
         if (!empty())
         {
-            return *(m_list.load()->data);
-        } else
+            return m_list.load(std::memory_order_relaxed).get();
+        }
+        else
         {
-            Node n;
-            return n; 
+            NBStack::value_type val;
+            return val;
         }
     }
 
     // Assume that val has copy constructor
     void push(const value_type& val)
     {
-        Node *new_node = new Node();
-        new_node->data = new value_type(val);
+        Node *new_node = new Node(val);
         do
         {
-            new_node->next = m_list;
+            new_node->next = m_list.load(std::memory_order_acquire);
         }
-        while (m_list.compare_exchange_weak(new_node->next, new_node));
-        m_size++;
+        while (m_list.compare_exchange_weak(new_node->next, new_node, std::memory_order_release));
     }
 
     void pop()
@@ -108,16 +103,55 @@ public:
     {
         // should be replaced with lock-free code
         Node *tmp_list = m_list;
-        size_t tmp_size = m_size;
-
         m_list = x.m_list;
         x.m_list = m_list;
-
-        m_size = x.m_size;
-        x.m_size = m_size;
     };
 
     //emplace TODO DO we need it?
+};
+
+class NBStack::Node
+{
+    Node(const NBStack::value_type& data)
+    {
+        m_data = new NBStack::value_type(data);
+        m_next = nullptr;
+    }
+
+    const NBStack::value_type& get() const
+    {
+        return *m_data;
+    }
+
+    NBStack::value_type& get()
+    {
+        return *m_data;
+    }
+      
+    Node*& next()
+    {
+        return m_next;
+    }
+
+    const Node*& next() const
+    {
+        return m_next;
+    }
+    
+    NBStack::size_type size() const
+    {
+        if (m_next) return m_next.size() + 1;
+        return 1;
+    }
+
+    ~Node()
+    {
+        delete m_data;
+    }
+
+private:
+    NBStack::value_type*  m_data;
+    Node*                 m_next;
 };
 
 } // namespace nba
