@@ -16,6 +16,10 @@ C++ non-blocking algorithms collection
           └-- src  
 ````
 
+#### Dev Dependencies
+lcov  
+
+
 #### Test
 ```
 # Build make files
@@ -24,4 +28,6 @@ cmake .
 make
 # Run all registred tests in super verbose mode
 ctest -VV
+# Get coverage report (console + html)
+make coverage
 ```

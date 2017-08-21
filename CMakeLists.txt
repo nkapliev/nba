@@ -4,8 +4,11 @@ cmake_minimum_required(VERSION 3.7)
 project(nba)
 set(CMAKE_CXX_STANDARD 14)
 
-# For global includes
+set(PROJECT_NAME nba)
+set(PROJECT_TEST_NAME nbaUnitTests)
 set(PROJECT_ROOT ./)
+
+# For global includes
 include_directories(${PROJECT_ROOT})
 
 # Googletest library
@@ -20,17 +23,42 @@ link_directories(${GTEST_ROOT}/lib)
 
 # Tests
 set(
-        NBA_CONTAINERS_TEST_SOURCE_FILES
-        test/test.cpp
-        test/containers/unit/stack.cpp
+        TEST_SOURCE_FILES
+        ${CMAKE_BINARY_DIR}/test/test.cpp
+        ${CMAKE_BINARY_DIR}/test/containers/unit/stack.cpp
 )
-add_executable(RunUnitTests ${NBA_CONTAINERS_TEST_SOURCE_FILES})
-add_dependencies(RunUnitTests googletest)
-target_link_libraries(RunUnitTests gtest gtest_main -lpthread)
+add_executable(${PROJECT_TEST_NAME} ${TEST_SOURCE_FILES})
+add_dependencies(${PROJECT_TEST_NAME} googletest)
+target_link_libraries(${PROJECT_TEST_NAME} gtest gtest_main -lpthread)
+
+# Code coverage
+set(CMAKE_MODULE_PATH ${PROJECT_ROOT}/CMakeModules)
+include(CodeCoverage)
+
+add_executable(${PROJECT_TEST_NAME}-test-coverage ${TEST_SOURCE_FILES})
+add_dependencies(${PROJECT_TEST_NAME}-test-coverage googletest)
+target_link_libraries(${PROJECT_TEST_NAME}-test-coverage gtest gtest_main -lpthread)
+
+set_target_properties(
+        ${PROJECT_TEST_NAME}-test-coverage PROPERTIES
+        COMPILE_FLAGS "-O0 -g -fprofile-arcs -ftest-coverage"
+)
+
+set_target_properties(
+        ${PROJECT_TEST_NAME}-test-coverage PROPERTIES
+        LINK_FLAGS "-O0 -g -fprofile-arcs -ftest-coverage"
+)
+
+set(COVERAGE_EXCLUDES ${TEST_SOURCE_FILES}) # TODO How to exclude /external files?
+
+SETUP_TARGET_FOR_COVERAGE(
+        NAME coverage
+        EXECUTABLE ${PROJECT_TEST_NAME}-test-coverage
+)
 
 # Register tests in CTest
 enable_testing()
 add_test(
-        NAME RunUnitTests
-        COMMAND RunUnitTests
+        NAME ${PROJECT_TEST_NAME}
+        COMMAND ${PROJECT_TEST_NAME}
 )

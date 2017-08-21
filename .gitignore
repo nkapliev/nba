@@ -44,4 +44,6 @@ cmake-build-debug/
 external/
 googletest-prefix/
 Testing/
-RunUnitTests
+coverage/
+nbaUnitTests
+nbaUnitTests-test-coverage
