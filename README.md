@@ -28,4 +28,6 @@ cmake .
 make
 # Run all registred tests in super verbose mode
 ctest -VV
+# Get coverage report (console + html)
+make coverage
 ```
