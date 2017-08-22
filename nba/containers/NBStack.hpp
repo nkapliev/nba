@@ -4,11 +4,6 @@
 #include <stdlib.h>
 #include <atomic>
 
-// would be good to be able to do
-// #include "Locks.hpp"
-// I removed relative paths by changing makefile. Looks good now?
-#include <nba/lock/Lock.hpp>
-
 namespace nba
 {
 
@@ -20,9 +15,6 @@ public:
     typedef T& reference;
     typedef int64_t size_type;
     typedef const T& const_reference;
-
-    // would be helpfull to use this in outer code
-    typedef lock::SpinLock lock_type; 
 
 private:
     class Node;
@@ -63,26 +55,13 @@ public:
         return m_list.load(std::memory_order_relaxed)->size();
     }
 
-    const_reference top() const
-    {
-        if (!empty())
-        {
-            return m_list.load(std::memory_order_relaxed).get();
-        }
-        else
-        {
-            NBStack::value_type val;
-            return val;
-        }
-    }
-
     // Assume that val has copy constructor
     void push(const value_type& val)
     {
         Node *new_node = new Node(val);
         do
         {
-            new_node->next = m_list.load(std::memory_order_acquire);
+            new_node->next.store(m_list.load(std::memory_order_acquire), std::memory_order_relaxed);
         }
         while (m_list.compare_exchange_weak(new_node->next, new_node, std::memory_order_release));
     }
@@ -91,31 +70,23 @@ public:
     {
         // it's not the right way
         // should be replaced with lock-free code
-        if (!empty())
-        {
-            Node *top = m_list;
-            m_list = m_list->next;
-            delete top;
-        }
     }
 
-    void swap(stack& x)
+    void swap(NBStack& x)
     {
         // should be replaced with lock-free code
-        Node *tmp_list = m_list;
-        m_list = x.m_list;
-        x.m_list = m_list;
     };
 
     //emplace TODO DO we need it?
 };
 
-class NBStack::Node
+template <typename T>
+class NBStack<T>::Node
 {
     Node(const NBStack::value_type& data)
     {
         m_data = new NBStack::value_type(data);
-        m_next = nullptr;
+        m_next.stor(nullptr, std::memory_order_relaxed);
     }
 
     const NBStack::value_type& get() const
@@ -128,19 +99,20 @@ class NBStack::Node
         return *m_data;
     }
       
-    Node*& next()
+    std::atomic<Node*> & next()
     {
-        return m_next;
+        return m_next.load(std::memory_order_relaxed);
     }
 
-    const Node*& next() const
+    const std::atomic<Node*> & next() const
     {
-        return m_next;
+        return m_next.load(std::memory_order_relaxed);
     }
     
     NBStack::size_type size() const
     {
-        if (m_next) return m_next.size() + 1;
+        if (m_next.load(std::memory_order_relaxed))
+            return m_next.load(std::memory_order_relaxed)->size() + 1;
         return 1;
     }
 
@@ -151,7 +123,7 @@ class NBStack::Node
 
 private:
     NBStack::value_type*  m_data;
-    Node*                 m_next;
+    std::atomic<Node*>    m_next;
 };
 
 } // namespace nba

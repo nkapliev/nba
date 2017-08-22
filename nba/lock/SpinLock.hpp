@@ -1,7 +1,10 @@
-#include <atomic>
-
 #ifdef NBA_SPIN_LOCK
 #define NBA_SPIN_LOCK
+
+#include <atomic>
+
+namespace nba
+{
 
 namespace lock
 {
@@ -19,5 +22,7 @@ public:
 };
 
 } // lock
+
+} // nba
 
 #endif // NBA_SPIN_LOCK
