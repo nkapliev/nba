@@ -71,7 +71,7 @@ public:
             // TODO Is it ok?
             throw std::logic_error("Calling `top` from empty stack is forbidden.");
         }
-    }
+    } // LCOV_EXCL_LINE
 
     // Assume that val has copy constructor
     void push(const value_type& val)
