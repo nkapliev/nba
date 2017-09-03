@@ -1,3 +1,4 @@
+#include <string.h>
 #include <gtest/gtest.h>
 #include <nba/containers/stack.hpp>
 
@@ -25,9 +26,25 @@ TEST(StackUnitTest, PushPopSize) {
     EXPECT_EQ(stack.size(), 0);
 }
 
+TEST(StackUnitTest, Top) {
+    nba::Stack<int> stack;
+
+    try {
+        stack.top();
+    } catch (const std::logic_error& e) {
+        EXPECT_EQ(strcmp(e.what(), "Calling `top` from empty stack is forbidden."), 0);
+    }
+
+    stack.push(1);
+    EXPECT_EQ(stack.top(), 1);
+    stack.push(2);
+    EXPECT_EQ(stack.top(), 2);
+    stack.pop();
+    EXPECT_EQ(stack.top(), 1);
+}
+
 TEST(StackUnitTest, Swap) {
     nba::Stack<int> stack1;
-
     stack1.push(1);
     stack1.push(2);
     stack1.push(3);
