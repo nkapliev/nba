@@ -9,9 +9,11 @@ TEST(StackUnitTest, Empty) {
     EXPECT_FALSE(stack.empty());
 }
 
-TEST(StackUnitTest, Size) {
+TEST(StackUnitTest, PushPopSize) {
     nba::Stack<int> stack;
 
+    EXPECT_EQ(stack.size(), 0);
+    stack.pop();
     EXPECT_EQ(stack.size(), 0);
     stack.push(1);
     EXPECT_EQ(stack.size(), 1);
@@ -21,6 +23,30 @@ TEST(StackUnitTest, Size) {
     EXPECT_EQ(stack.size(), 1);
     stack.pop();
     EXPECT_EQ(stack.size(), 0);
-    stack.pop();
-    EXPECT_EQ(stack.size(), 0);
+}
+
+TEST(StackUnitTest, Swap) {
+    nba::Stack<int> stack1;
+
+    stack1.push(1);
+    stack1.push(2);
+    stack1.push(3);
+
+    nba::Stack<int> stack2;
+    stack2.push(10);
+    stack2.push(20);
+
+    stack1.swap(stack2);
+
+    EXPECT_EQ(stack1.size(), 2);
+    EXPECT_EQ(stack1.top(), 20);
+    stack1.pop();
+    EXPECT_EQ(stack1.top(), 10);
+
+    EXPECT_EQ(stack2.size(), 3);
+    EXPECT_EQ(stack2.top(), 3);
+    stack2.pop();
+    EXPECT_EQ(stack2.top(), 2);
+    stack2.pop();
+    EXPECT_EQ(stack2.top(), 1);
 }

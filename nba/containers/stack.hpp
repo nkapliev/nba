@@ -101,10 +101,10 @@ public:
         size_type tmp_size = m_size;
 
         m_list = x.m_list;
-        x.m_list = m_list;
+        x.m_list = tmp_list;
 
         m_size = x.m_size;
-        x.m_size = m_size;
+        x.m_size = tmp_size;
     };
 
     //emplace TODO DO we need it?
