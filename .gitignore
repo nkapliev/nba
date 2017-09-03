@@ -37,6 +37,7 @@ Makefile
 CMakeCache.txt
 cmake_install.cmake
 CMakeFiles/
+*.cbp
 
 build/
 !build/CMakeLists.txt
