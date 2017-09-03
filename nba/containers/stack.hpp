@@ -90,6 +90,7 @@ public:
         {
             Node *top = m_list;
             m_list = m_list->next;
+            m_size--;
             delete top;
         }
     }
