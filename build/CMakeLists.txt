@@ -1,5 +1,3 @@
-# TODO Move all build-related tmp crap to `build` dir
-# See https://github.com/snikulov/google-test-examples/blob/master/build.cmake
 cmake_minimum_required(VERSION 3.7)
 project(nba)
 set(CMAKE_CXX_STANDARD 14)
@@ -32,6 +30,7 @@ add_executable(${PROJECT_TEST_NAME} ${TEST_SOURCE_FILES})
 add_dependencies(${PROJECT_TEST_NAME} googletest)
 target_link_libraries(${PROJECT_TEST_NAME} gtest gtest_main -lpthread)
 
+# TODO Coverage does not show correct percentage. Need to fix that.
 # Code coverage
 set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR}/CMakeModules)
 include(CodeCoverage)
