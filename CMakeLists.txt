@@ -1,5 +1,5 @@
-# TODO Move all build-related tmp crap to `build` dir
-# See https://github.com/snikulov/google-test-examples/blob/master/build.cmake
+# TODO gtest builds twice. Why?
+
 cmake_minimum_required(VERSION 3.7)
 set(CMAKE_CXX_STANDARD 14)
 set(PROJECT_NAME nba)

@@ -25,6 +25,7 @@ set(
         ${PROJECT_ROOT}/test/test.cpp
         ${PROJECT_ROOT}/test/containers/unit/stack.cpp
         ${PROJECT_ROOT}/test/containers/unit/NBStack.cpp
+        ${PROJECT_ROOT}/test/containers/unit/NBCountStack.cpp
 )
 add_executable(${PROJECT_TEST_NAME} ${TEST_SOURCE_FILES})
 add_dependencies(${PROJECT_TEST_NAME} googletest)

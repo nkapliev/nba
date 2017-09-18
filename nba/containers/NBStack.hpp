@@ -86,7 +86,7 @@ class NBStack<T>::Node
     Node(const NBStack::value_type& data)
     {
         m_data = new NBStack::value_type(data);
-        m_next.stor(nullptr, std::memory_order_relaxed);
+        m_next.store(nullptr, std::memory_order_relaxed);
     }
 
     const NBStack::value_type& get() const
